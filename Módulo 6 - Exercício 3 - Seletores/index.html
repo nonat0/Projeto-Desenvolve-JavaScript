@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Tarefas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 8px;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin-left: 10px;
+    }
+
+    .tarefa {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .descricao {
+      margin-left: 10px;
+    }
+
+    .concluida {
+      text-decoration: line-through;
+      color: gray;
+      font-style: italic;
+    }
+
+    .nao-concluida {
+      color: black;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lista de Tarefas</h1>
+
+  <input type="text" id="inputTarefa" placeholder="Nova tarefa">
+  <button onclick="adicionarTarefa()">Adicionar</button>
+
+  <div id="listaTarefas"></div>
+
+  <script src="index.js"></script>
+
+</body>
+</html>
