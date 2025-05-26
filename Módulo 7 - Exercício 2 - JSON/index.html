@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feed de Gatinhos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-top: 140px;
+      background: #f2f2f2;
+    }
+
+    .form-container {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      resize: none;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      align-self: flex-end;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .feed {
+      max-width: 600px;
+      margin: auto;
+      padding: 10px;
+    }
+
+    .post {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .username {
+      font-weight: bold;
+    }
+
+    .post-text {
+      margin: 10px 0;
+    }
+
+    .post img.cat {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .like-button {
+      background: none;
+      border: none;
+      color: #e0245e;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <form id="postForm">
+    <textarea id="postText" placeholder="No que você está pensando?"></textarea>
+    <button type="submit">Postar</button>
+  </form>
+</div>
+
+<div class="feed" id="feed"></div>
+
+<script>
+  const feed = [];
+  const feedContainer = document.getElementById('feed');
+  const form = document.getElementById('postForm');
+  const textarea = document.getElementById('postText');
+
+  const defaultUser = {
+    username: 'Usuário',
+    avatar: 'https://picsum.photos/200'
+  };
+
+  async function getimagemGato() {
+    const res = await fetch('https://api.thecatapi.com/v1/images/search');
+    const data = await res.json();
+    return data[0].url;
+  }
+
+  function renderFeed() {
+    feedContainer.innerHTML = '';
+    for (let i = feed.length - 1; i >= 0; i--) {
+      const post = feed[i];
+      const postTwitter = document.createElement('div');
+      postTwitter.className = 'post';
+
+      postTwitter.innerHTML = `
+        <div class="user-info">
+          <img class="avatar" src="${post.avatar}" alt="Avatar" />
+          <span class="username">@${post.username}</span>
+        </div>
+        <div class="post-text">${post.text}</div>
+        <img class="cat" src="${post.imagemGato}" alt="Gatinho fofo" />
+        <button class="like-button" data-index="${i}">❤️ Curtir (${post.likes})</button>
+      `;
+
+      postTwitter.querySelector('.like-button').addEventListener('click', () => {
+        post.likes++;
+        renderFeed();
+      });
+
+      feedContainer.appendChild(postTwitter);
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = textarea.value.trim();
+    if (text === '') return;
+
+    const imagemGato = await getimagemGato();
+
+    feed.push({
+      date: new Date().toISOString(),
+      username: defaultUser.username,
+      avatar: defaultUser.avatar,
+      text: text,
+      imagemGato: imagemGato,
+      likes: 0
+    });
+
+    textarea.value = '';
+    renderFeed();
+  });
+</script>
+
+</body>
+</html>

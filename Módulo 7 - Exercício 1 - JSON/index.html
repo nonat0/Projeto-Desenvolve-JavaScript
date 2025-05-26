@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Busca de Usuários GitHub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 30px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .user-card {
+      background-color: white;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      width: 100vw;
+      max-width: 500px;
+    }
+
+    .user-card img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .user-card a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .user-card a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Buscar Usuários do GitHub</h1>
+  <div class="search-container">
+    <input id="pesquisar" type="text" placeholder="Digite um nome de usuário" />
+    <button id="botao">Buscar</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    const botao = document.getElementById('botao');
+    const pesquisar = document.getElementById('pesquisar');
+    const resultDiv = document.getElementById('result');
+
+    botao.addEventListener('click', async () => {
+      const query = pesquisar.value.trim();
+      resultDiv.innerHTML = '';
+
+      if (!query) return;
+
+      const respostaQuery = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`);
+      const data = await respostaQuery.json();
+
+      if (data.items && data.items.length > 0) {
+        data.items.forEach(user => {
+          const card = document.createElement('div');
+          card.className = 'user-card';
+          card.innerHTML = `
+            <img src="${user.avatar_url}" alt="${user.login}">
+            <div>
+              <p><strong>${user.login}</strong></p>
+              <a href="${user.html_url}" target="_blank">Ver perfil</a>
+            </div>
+          `;
+          resultDiv.appendChild(card);
+        });
+      } else {
+        resultDiv.innerHTML = `<p class="message">Não foram encontrados usuários para esta pesquisa.</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
